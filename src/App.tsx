@@ -43,8 +43,8 @@ function App() {
       <div className="flex items-center justify-between shrink-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Lite JSON</h1>
-          <p className="text-gray-500 text-xs">
-            Simplify JSON — every array trimmed to its first element, recursively.
+          <p className="text-gray-500 text-xs max-w-md">
+            Shrink large JSON payloads before feeding them to an LLM — smaller context, sharper answers.
           </p>
         </div>
 
