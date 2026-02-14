@@ -11,16 +11,20 @@ function App() {
   const [input, setInput] = useState(PLACEHOLDER);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
+  const [stats, setStats] = useState<{ before: number; after: number } | null>(null);
 
   const handleSimplify = () => {
     try {
       const parsed = JSON.parse(input);
       const simplified = simplifyJson(parsed);
-      setOutput(JSON.stringify(simplified, null, 2));
+      const result = JSON.stringify(simplified, null, 2);
+      setOutput(result);
+      setStats({ before: input.length, after: result.length });
       setError("");
     } catch {
       setError("Invalid JSON — please fix and try again.");
       setOutput("");
+      setStats(null);
     }
   };
 
@@ -65,6 +69,18 @@ function App() {
 
       {error && (
         <p className="text-red-400 text-sm font-medium">{error}</p>
+      )}
+
+      {stats && (
+        <p className="text-gray-400 text-sm">
+          <span className="text-gray-100 font-medium">{stats.before.toLocaleString()}</span> chars
+          {" → "}
+          <span className="text-gray-100 font-medium">{stats.after.toLocaleString()}</span> chars
+          {" · "}
+          <span className="text-green-400 font-medium">
+            {((1 - stats.after / stats.before) * 100).toFixed(2)}% reduced
+          </span>
+        </p>
       )}
 
       <div className="flex gap-3">
