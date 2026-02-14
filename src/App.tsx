@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { simplifyJson } from "./simplify-json";
+import { JsonHighlight } from "./json-highlight";
 
 const PLACEHOLDER = JSON.stringify(
   { data: [{ name: "keyvan", last: "matin" }, { name: "pezhman", last: "dswad" }] },
@@ -33,21 +34,58 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col items-center p-6 gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Lite JSON</h1>
-      <p className="text-gray-400 text-sm max-w-lg text-center">
-        Paste your JSON below and click <strong>Simplify</strong>. Every array
-        will be trimmed to its first element, recursively.
-      </p>
+    <div className="h-screen bg-gray-950 text-gray-100 flex flex-col p-4 gap-3">
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Lite JSON</h1>
+          <p className="text-gray-500 text-xs">
+            Simplify JSON — every array trimmed to its first element, recursively.
+          </p>
+        </div>
 
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center gap-3">
+          {error && (
+            <p className="text-red-400 text-sm font-medium">{error}</p>
+          )}
+
+          {stats && (
+            <p className="text-gray-400 text-sm">
+              <span className="text-gray-100 font-medium">{stats.before.toLocaleString()}</span>
+              {" → "}
+              <span className="text-gray-100 font-medium">{stats.after.toLocaleString()}</span>
+              {" chars · "}
+              <span className="text-green-400 font-medium">
+                {((1 - stats.after / stats.before) * 100).toFixed(2)}% reduced
+              </span>
+            </p>
+          )}
+
+          <button
+            onClick={handleSimplify}
+            className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors cursor-pointer"
+          >
+            Simplify
+          </button>
+          <button
+            onClick={handleCopy}
+            disabled={!output}
+            className="px-4 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            Copy
+          </button>
+        </div>
+      </div>
+
+      {/* Panels */}
+      <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Input */}
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+        <div className="flex flex-col gap-1.5 min-h-0">
+          <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             Input
           </label>
           <textarea
-            className="h-80 rounded-lg bg-gray-900 border border-gray-700 p-3 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 min-h-0 rounded-lg bg-gray-900 border border-gray-800 p-4 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             spellCheck={false}
@@ -55,48 +93,14 @@ function App() {
         </div>
 
         {/* Output */}
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+        <div className="flex flex-col gap-1.5 min-h-0">
+          <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             Output
           </label>
-          <textarea
-            className="h-80 rounded-lg bg-gray-900 border border-gray-700 p-3 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={output}
-            readOnly
-          />
+          <pre className="flex-1 min-h-0 rounded-lg bg-gray-900 border border-gray-800 p-4 font-mono text-sm leading-relaxed overflow-auto whitespace-pre-wrap">
+            <JsonHighlight json={output} />
+          </pre>
         </div>
-      </div>
-
-      {error && (
-        <p className="text-red-400 text-sm font-medium">{error}</p>
-      )}
-
-      {stats && (
-        <p className="text-gray-400 text-sm">
-          <span className="text-gray-100 font-medium">{stats.before.toLocaleString()}</span> chars
-          {" → "}
-          <span className="text-gray-100 font-medium">{stats.after.toLocaleString()}</span> chars
-          {" · "}
-          <span className="text-green-400 font-medium">
-            {((1 - stats.after / stats.before) * 100).toFixed(2)}% reduced
-          </span>
-        </p>
-      )}
-
-      <div className="flex gap-3">
-        <button
-          onClick={handleSimplify}
-          className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors cursor-pointer"
-        >
-          Simplify
-        </button>
-        <button
-          onClick={handleCopy}
-          disabled={!output}
-          className="px-5 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-        >
-          Copy Output
-        </button>
       </div>
     </div>
   );
