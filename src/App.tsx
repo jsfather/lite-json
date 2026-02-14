@@ -29,8 +29,12 @@ function App() {
     }
   };
 
+  const [copied, setCopied] = useState(false);
+
   const handleCopy = async () => {
     await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   };
 
   return (
@@ -70,9 +74,13 @@ function App() {
           <button
             onClick={handleCopy}
             disabled={!output}
-            className="px-4 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ${
+              copied
+                ? "bg-green-600 hover:bg-green-500"
+                : "bg-gray-700 hover:bg-gray-600"
+            }`}
           >
-            Copy
+            {copied ? "Copied!" : "Copy"}
           </button>
         </div>
       </div>
