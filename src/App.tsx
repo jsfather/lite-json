@@ -3,7 +3,34 @@ import { simplifyJson } from "./simplify-json";
 import { JsonHighlight } from "./json-highlight";
 
 const PLACEHOLDER = JSON.stringify(
-  { data: [{ name: "keyvan", last: "matin" }, { name: "pezhman", last: "dswad" }] },
+  {
+    users: [
+      {
+        id: 1,
+        name: "Alice",
+        email: "alice@example.com",
+        orders: [
+          { orderId: 101, items: [{ product: "Laptop", price: 999 }, { product: "Mouse", price: 25 }] },
+          { orderId: 102, items: [{ product: "Keyboard", price: 75 }] },
+        ],
+      },
+      {
+        id: 2,
+        name: "Bob",
+        email: "bob@example.com",
+        orders: [
+          { orderId: 201, items: [{ product: "Monitor", price: 450 }] },
+        ],
+      },
+      {
+        id: 3,
+        name: "Charlie",
+        email: "charlie@example.com",
+        orders: [],
+      },
+    ],
+    meta: { total: 3, page: 1, perPage: 20 },
+  },
   null,
   2,
 );
