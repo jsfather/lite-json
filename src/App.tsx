@@ -41,19 +41,35 @@ function App() {
   const [error, setError] = useState("");
   const [stats, setStats] = useState<{ before: number; after: number } | null>(null);
 
+  const [pretty, setPretty] = useState(false);
+
   const handleSimplify = () => {
     try {
       const parsed = JSON.parse(input);
       const simplified = simplifyJson(parsed);
-      const result = JSON.stringify(simplified, null, 2);
+      const result = JSON.stringify(simplified);
       setOutput(result);
       setStats({ before: input.length, after: result.length });
+      setPretty(false);
       setError("");
     } catch {
       setError("Invalid JSON — please fix and try again.");
       setOutput("");
       setStats(null);
     }
+  };
+
+  const toggleFormat = () => {
+    try {
+      const parsed = JSON.parse(output);
+      const next = !pretty;
+      const formatted = next
+        ? JSON.stringify(parsed, null, 2)
+        : JSON.stringify(parsed);
+      setOutput(formatted);
+      setStats((prev) => (prev ? { ...prev, after: formatted.length } : null));
+      setPretty(next);
+    } catch { /* no-op */ }
   };
 
   const [copied, setCopied] = useState(false);
@@ -128,13 +144,21 @@ function App() {
         </div>
 
         {/* Output */}
-        <div className="flex flex-col gap-1.5 min-h-0">
+        <div className="flex flex-col gap-1.5 min-h-0 relative">
           <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             Output
           </label>
-          <pre className="flex-1 min-h-0 rounded-lg bg-gray-900 border border-gray-800 p-4 font-mono text-sm leading-relaxed overflow-auto whitespace-pre-wrap">
+          <pre className="flex-1 min-h-0 rounded-lg bg-gray-900 border border-gray-800 p-4 pb-12 font-mono text-sm leading-relaxed overflow-auto whitespace-pre-wrap">
             <JsonHighlight json={output} />
           </pre>
+          {output && (
+            <button
+              onClick={toggleFormat}
+              className="absolute bottom-3 right-3 px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs font-medium transition-colors cursor-pointer"
+            >
+              {pretty ? "Minify" : "Beautify"}
+            </button>
+          )}
         </div>
       </div>
     </div>
