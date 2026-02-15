@@ -1,46 +1,80 @@
-# React + TypeScript + Vite
+# Lite JSON
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Shrink large JSON payloads before feeding them to an LLM — smaller context, sharper answers.
 
-Currently, two official plugins are available:
+Lite JSON recursively simplifies any JSON by trimming every array down to its single most representative element, preserving the full schema shape while dramatically reducing token count.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How It Works
 
-## React Compiler
+Paste (or type) JSON into the **Input** panel, click **Simplify**, and get a minimal version in the **Output** panel.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Algorithm** — for each array in the payload:
 
-## Expanding the ESLint configuration
+1. Score every element by nesting depth (deepest = most structural info).
+2. Break ties by serialized size (smallest wins).
+3. Keep only the winning element and recurse into it.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Objects are traversed recursively; primitives pass through unchanged.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```
+Input  → { "users": [{ "name": "Alice", "orders": [1,2] }, { "name": "Bob", "orders": [] }] }
+Output → { "users": [{ "name": "Alice", "orders": [1] }] }
+```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Features
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **One-click simplification** with live before/after character counts and reduction percentage
+- **Beautify / Minify** toggle for the output
+- **Copy to clipboard** button
+- Syntax-highlighted JSON output
+- Zero backend — runs entirely in the browser
+
+## Quick Start
+
+```bash
+# Prerequisites: Bun ≥ 1.x
+curl -fsSL https://bun.sh/install | bash
+
+# Clone and run
+git clone https://github.com/jsfather/lite-json
+cd lite-json
+bun install
+bun run dev        # → http://localhost:5173
+```
+
+## Scripts
+
+| Command            | Description                        |
+| ------------------ | ---------------------------------- |
+| `bun run dev`      | Start Vite dev server with HMR     |
+| `bun run build`    | Type-check + production build      |
+| `bun run preview`  | Preview the production build       |
+| `bun run lint`     | Run ESLint                         |
+
+## Tech Stack
+
+| Layer     | Tool                         |
+| --------- | ---------------------------- |
+| Runtime   | [Bun](https://bun.sh)       |
+| Framework | React 19 + TypeScript        |
+| Bundler   | Vite 7                       |
+| Styling   | Tailwind CSS 4 (Vite plugin) |
+| Linting   | ESLint 9 (flat config)       |
+
+## Project Structure
+
+```
+src/
+├── main.tsx            # React entry point
+├── App.tsx             # Main UI — input/output panels, buttons
+├── index.css           # Tailwind import + custom styles
+├── simplify-json.ts    # Core simplification logic (pure function)
+└── json-highlight.tsx  # Syntax highlighting for JSON output
+```
+
+## License
+
+MIT
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
