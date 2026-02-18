@@ -1,16 +1,17 @@
 /**
  * Counts the depth of nesting in a value.
- * Objects/arrays add 1 + the max depth of their children.
+ * Non-empty objects/arrays add 1 + the max depth of their children.
+ * Empty arrays/objects return 0 — they carry no inner structure.
  * Primitives have depth 0.
  */
 function nestingDepth(value: unknown): number {
   if (Array.isArray(value)) {
-    if (value.length === 0) return 1;
+    if (value.length === 0) return 0;
     return 1 + Math.max(...value.map(nestingDepth));
   }
   if (value !== null && typeof value === "object") {
     const vals = Object.values(value as Record<string, unknown>);
-    if (vals.length === 0) return 1;
+    if (vals.length === 0) return 0;
     return 1 + Math.max(...vals.map(nestingDepth));
   }
   return 0;
